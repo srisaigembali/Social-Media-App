@@ -15,8 +15,12 @@ import { SignupValidation } from "@/lib/validation";
 import Loader from "@/components/shared/Loader";
 import { Link } from "react-router-dom";
 import { createUserAccount } from "@/lib/appwrite/api";
+import { useToast } from "@/hooks/use-toast";
 
 const SignupForm = () => {
+	const isLoading = false;
+	const { toast } = useToast();
+
 	const form = useForm<z.infer<typeof SignupValidation>>({
 		resolver: zodResolver(SignupValidation),
 		defaultValues: {
@@ -29,10 +33,12 @@ const SignupForm = () => {
 
 	async function onSubmit(values: z.infer<typeof SignupValidation>) {
 		const newUser = await createUserAccount(values);
-		console.log(newUser);
+		if (!newUser) {
+			toast({
+				title: "Sign up failed. Please try again.",
+			});
+		}
 	}
-
-	const isLoading = false;
 
 	return (
 		<Form {...form}>
