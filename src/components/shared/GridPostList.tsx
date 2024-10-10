@@ -25,7 +25,7 @@ const GridPostList = ({ posts, showUser = true, showStats = true }: GridPostList
 						className='grid-post_link'
 					>
 						<img
-							src={post.imageUrl}
+							src={post.image}
 							alt='post'
 							className='h-full w-full object-cover'
 						/>

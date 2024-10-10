@@ -6,11 +6,13 @@ import {
 	deletePost,
 	deleteSavedPost,
 	getCurrrentUser,
+	getInfinitePosts,
 	getPostById,
 	getRecentPosts,
 	getUserPosts,
 	likePost,
 	savePost,
+	searchPosts,
 	signInAccount,
 	signOutAccount,
 	updatePost,
@@ -158,5 +160,31 @@ export const useGetUserPosts = (userId?: string) => {
 		queryKey: [QUERY_KEYS.GET_USER_POSTS, userId],
 		queryFn: () => getUserPosts(userId),
 		enabled: !!userId,
+	});
+};
+
+export const useSearchPosts = (searchTerm: string) => {
+	return useQuery({
+		queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
+		queryFn: () => searchPosts(searchTerm),
+		enabled: !!searchTerm,
+	});
+};
+
+export const useGetPosts = () => {
+	return useInfiniteQuery({
+		queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
+		queryFn: getInfinitePosts as any,
+		getNextPageParam: (lastPage: any) => {
+			// If there's no data, there are no more pages.
+			if (lastPage && lastPage.documents.length === 0) {
+				return null;
+			}
+
+			// Use the $id of the last document as the cursor.
+			const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+			return lastId;
+		},
+		initialPageParam: null, // Add the initialPageParam to start with
 	});
 };
