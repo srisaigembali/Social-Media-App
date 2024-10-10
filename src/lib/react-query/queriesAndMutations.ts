@@ -10,6 +10,7 @@ import {
 	getPostById,
 	getRecentPosts,
 	getUserPosts,
+	getUsers,
 	likePost,
 	savePost,
 	searchPosts,
@@ -186,5 +187,12 @@ export const useGetPosts = () => {
 			return lastId;
 		},
 		initialPageParam: null, // Add the initialPageParam to start with
+	});
+};
+
+export const useGetUsers = (limit?: number) => {
+	return useQuery({
+		queryKey: [QUERY_KEYS.GET_USERS],
+		queryFn: () => getUsers(limit),
 	});
 };
