@@ -181,3 +181,90 @@ export async function getRecentPosts() {
 		console.log(error);
 	}
 }
+
+export async function getAccount() {
+	try {
+		const currentAccount = await account.get();
+
+		return currentAccount;
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export async function getCurrentUser() {
+	try {
+		const currentAccount = await getAccount();
+
+		if (!currentAccount) throw Error;
+
+		const currentUser = await databases.listDocuments(
+			appwriteConfig.databaseId,
+			appwriteConfig.userCollectionId,
+			[Query.equal("accountId", currentAccount.$id)]
+		);
+
+		if (!currentUser) throw Error;
+
+		return currentUser.documents[0];
+	} catch (error) {
+		console.log(error);
+		return null;
+	}
+}
+
+export async function likePost(postId: string, likesArray: string[]) {
+	try {
+		const updatedPost = await databases.updateDocument(
+			appwriteConfig.databaseId,
+			appwriteConfig.postCollectionId,
+			postId,
+			{
+				likes: likesArray,
+			}
+		);
+
+		if (!updatedPost) throw Error;
+
+		return updatedPost;
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+// ============================== SAVE POST
+export async function savePost(userId: string, postId: string) {
+	try {
+		const updatedPost = await databases.createDocument(
+			appwriteConfig.databaseId,
+			appwriteConfig.saveCollectionId,
+			ID.unique(),
+			{
+				user: userId,
+				post: postId,
+			}
+		);
+
+		if (!updatedPost) throw Error;
+
+		return updatedPost;
+	} catch (error) {
+		console.log(error);
+	}
+}
+// ============================== DELETE SAVED POST
+export async function deleteSavedPost(savedRecordId: string) {
+	try {
+		const statusCode = await databases.deleteDocument(
+			appwriteConfig.databaseId,
+			appwriteConfig.saveCollectionId,
+			savedRecordId
+		);
+
+		if (!statusCode) throw Error;
+
+		return { status: "Ok" };
+	} catch (error) {
+		console.log(error);
+	}
+}
